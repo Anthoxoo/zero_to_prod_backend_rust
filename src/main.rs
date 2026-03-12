@@ -1,18 +1,10 @@
-use actix_web::{App, HttpRequest, HttpServer, web};
+use std::net::TcpListener;
 
-async fn greet(request: HttpRequest) -> String {
-    let name = request.match_info().get("name").unwrap_or("World");
-    format!("Hello {}!", name)
-}
+use zero_to_prod_backend_rust::run;
 
-#[actix_web::main]
+#[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    HttpServer::new(|| {
-        App::new()
-            .route("/", web::get().to(greet))
-            .route("/{name}", web::get().to(greet))
-    })
-    .bind("0.0.0.0:8000")?
-    .run()
-    .await
+    let listener =
+        TcpListener::bind("127.0.0.1:0").expect("Failed to bind the port using TcpListener");
+    run(listener).expect("Error binding the ports.").await
 }
