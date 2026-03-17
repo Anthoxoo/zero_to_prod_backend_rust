@@ -1,4 +1,6 @@
+use sqlx::{Connection, PgConnection};
 use std::net::TcpListener;
+use zero_to_prod_backend_rust::configuration::get_configuration;
 use zero_to_prod_backend_rust::startup::run;
 
 #[tokio::test]
@@ -20,6 +22,13 @@ async fn health_check_works() {
 #[tokio::test]
 async fn subscribe_returns_a_200_for_valid_form_data() {
     let app_address = spawn_app();
+
+    let db_config = get_configuration().expect("Failed to read the configuration file.");
+    let config_string = db_config.database.settings_to_string();
+    let _connection = PgConnection::connect(&config_string)
+        .await
+        .expect("Error connecting to the db.");
+
     let client = reqwest::Client::new();
 
     let body = "name=le%20guin&email=ursula_le_guin%40gmail.com"; // body that is valid
