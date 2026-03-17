@@ -1,5 +1,5 @@
 use std::net::TcpListener;
-use zero_to_prod_backend_rust::run;
+use zero_to_prod_backend_rust::startup::run;
 
 #[tokio::test]
 async fn health_check_works() {
